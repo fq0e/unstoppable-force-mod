@@ -35,6 +35,16 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxCollision;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
+import lime.app.Application;
+import lime.graphics.RenderContext;
+import lime.ui.MouseButton;
+import lime.ui.KeyCode;
+import lime.ui.KeyModifier;
+import lime.ui.Window;
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
+import openfl.display.Sprite;
+import openfl.utils.Assets;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import haxe.Json;
@@ -157,6 +167,10 @@ class PlayState extends MusicBeatState
 	public var gf:Character = null;
 	public var boyfriend:Boyfriend = null;
 
+	var windowDad:Window;
+	var dadWin = new Sprite();
+	var dadScrollWin = new Sprite();
+
 	public var notes:FlxTypedGroup<Note>;
 	public var unspawnNotes:Array<Note> = [];
 	public var eventNotes:Array<EventNote> = [];
@@ -251,6 +265,8 @@ class PlayState extends MusicBeatState
 	var grpLimoParticles:FlxTypedGroup<BGSprite>;
 	var grpLimoDancers:FlxTypedGroup<BackgroundDancer>;
 	var fastCar:BGSprite;
+
+	var mariBG:Array<BGSprite> = [];
 
 	var upperBoppers:BGSprite;
 	var bottomBoppers:BGSprite;
@@ -549,6 +565,25 @@ class PlayState extends MusicBeatState
 				bg.updateHitbox();
 				bg.screenCenter();
 				add(bg);
+
+				var ocean2:BGSprite = new BGSprite('unstoppable-force/ocean2',0,0,1.2,1.2);
+				ocean2.scale.set(1.5,1.5);
+				ocean2.updateHitbox();
+				ocean2.screenCenter();
+				ocean2.alpha = 0;
+				add(ocean2);
+
+				var bg2:BGSprite = new BGSprite('unstoppable-force/grass2',0,0,1,1);
+				bg2.scale.set(1.5,1.5);
+				bg2.updateHitbox();
+				bg2.screenCenter();
+				bg2.alpha = 0;
+				add(bg2);
+
+				mariBG.push(bg);
+				mariBG.push(ocean);
+				mariBG.push(bg2);
+				mariBG.push(ocean2);
 		}
 
 		switch(Paths.formatToSongPath(SONG.song))
@@ -2969,6 +3004,17 @@ class PlayState extends MusicBeatState
 		setOnLuas('cameraY', camFollowPos.y);
 		setOnLuas('botPlay', cpuControlled);
 		callOnLuas('onUpdatePost', [elapsed]);
+
+		@:privateAccess
+        var dadFrame = dad._frame;
+        
+        if (dadFrame == null || dadFrame.frame == null) return; // prevents crashes (i think???)
+            
+        var rect = new Rectangle(dadFrame.frame.x, dadFrame.frame.y, dadFrame.frame.width, dadFrame.frame.height);
+        
+        dadScrollWin.scrollRect = rect;
+        dadScrollWin.x = (((dadFrame.offset.x) - (dad.offset.x / 2)) * dadScrollWin.scaleX);
+        dadScrollWin.y = (((dadFrame.offset.y) - (dad.offset.y / 2)) * dadScrollWin.scaleY);        
 	}
 
 	function openPauseMenu()
@@ -4663,6 +4709,64 @@ class PlayState extends MusicBeatState
 
 	var lastBeatHit:Int = -1;
 
+	function popupWindow(customWidth:Int, customHeight:Int, ?customX:Int, ?customName:String) {
+        var display = Application.current.window.display.currentMode;
+        // PlayState.defaultCamZoom = 0.5;
+
+		if(customName == '' || customName == null){
+			customName = 'Opponent.json';
+		}
+
+        windowDad = Lib.application.createWindow({
+            title: customName,
+            width: customWidth,
+            height: customHeight,
+            borderless: false,
+            alwaysOnTop: true
+
+        });
+		if(customX == null){
+			customX = -10;
+		}
+        windowDad.x = customX;
+	    	windowDad.y = Std.int(display.height / 2);
+        windowDad.stage.color = 0xFF010101;
+        @:privateAccess
+        windowDad.stage.addEventListener("keyDown", FlxG.keys.onKeyDown);
+        @:privateAccess
+        windowDad.stage.addEventListener("keyUp", FlxG.keys.onKeyUp);
+        // Application.current.window.x = Std.int(display.width / 2) - 640;
+        // Application.current.window.y = Std.int(display.height / 2);
+
+        // var bg = Paths.image(PUT YOUR IMAGE HERE!!!!).bitmap;
+        // var spr = new Sprite();
+
+        var m = new Matrix();
+
+        // spr.graphics.beginBitmapFill(bg, m);
+        // spr.graphics.drawRect(0, 0, bg.width, bg.height);
+        // spr.graphics.endFill();
+        FlxG.mouse.useSystemCursor = true;
+
+        //Application.current.window.resize(640, 480);
+
+
+
+        dadWin.graphics.beginBitmapFill(dad.pixels, m);
+        dadWin.graphics.drawRect(0, 0, dad.pixels.width, dad.pixels.height);
+        dadWin.graphics.endFill();
+        dadScrollWin.scrollRect = new Rectangle();
+	// windowDad.stage.addChild(spr);
+        windowDad.stage.addChild(dadScrollWin);
+        dadScrollWin.addChild(dadWin);
+        dadScrollWin.scaleX = 0.7;
+        dadScrollWin.scaleY = 0.7;
+        // dadGroup.visible = false;
+        // uncomment the line above if you want it to hide the dad ingame and make it visible via the windoe
+        Application.current.window.focus();
+	    	FlxG.autoPause = false;
+    }
+
 	override function beatHit()
 	{
 		super.beatHit();
@@ -4750,10 +4854,29 @@ class PlayState extends MusicBeatState
 		{
 			lightningStrikeShit();
 		}
+
+		if (curStage == 'mari')
+		{
+			switch (curBeat)
+			{
+				case 162:
+					mariBG[0].alpha = 0;
+					mariBG[1].alpha = 0;
+					mariBG[2].alpha = 1;
+					mariBG[3].alpha = 1;
+				case 208:
+					// window popup
+					popupWindow(640,480,500,'CORNERED');
+				case 240:
+					// window close
+					windowDad.close();
+			}
+		}
 		lastBeatHit = curBeat;
 
 		setOnLuas('curBeat', curBeat); //DAWGG?????
 		callOnLuas('onBeatHit', []);
+
 	}
 
 	override function sectionHit()
