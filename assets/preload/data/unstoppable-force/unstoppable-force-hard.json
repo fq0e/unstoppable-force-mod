@@ -18833,6 +18833,26 @@
 				"bpm": 125
 			},
 			{
+				"typeOfSection": 0,
+				"sectionNotes": [],
+				"sectionBeats": 4,
+				"altAnim": false,
+				"gfSection": false,
+				"bpm": 125,
+				"changeBPM": false,
+				"mustHitSection": true
+			},
+			{
+				"sectionBeats": 4,
+				"sectionNotes": [],
+				"typeOfSection": 0,
+				"gfSection": false,
+				"altAnim": false,
+				"mustHitSection": true,
+				"changeBPM": false,
+				"bpm": 125
+			},
+			{
 				"gfSection": false,
 				"altAnim": false,
 				"typeOfSection": 0,
@@ -18844,6 +18864,46 @@
 			}
 		],
 		"events": [
+			[
+				20160,
+				[
+					[
+						"Play Animation",
+						"point",
+						"dad"
+					]
+				]
+			],
+			[
+				20640,
+				[
+					[
+						"Play Animation",
+						"dodge",
+						"dad"
+					]
+				]
+			],
+			[
+				33600,
+				[
+					[
+						"Play Animation",
+						"point",
+						"dad"
+					]
+				]
+			],
+			[
+				34080,
+				[
+					[
+						"Play Animation",
+						"dodge",
+						"dad"
+					]
+				]
+			],
 			[
 				88780.5235602095,
 				[

@@ -13,7 +13,7 @@
 		},
 		{
 			"offsets": [
-				130,
+				90,
 				0
 			],
 			"loop": false,
@@ -24,8 +24,8 @@
 		},
 		{
 			"offsets": [
-				20,
-				-25
+				0,
+				-10
 			],
 			"loop": false,
 			"fps": 24,
@@ -35,8 +35,8 @@
 		},
 		{
 			"offsets": [
-				-5,
-				50
+				0,
+				25
 			],
 			"loop": false,
 			"fps": 24,
@@ -46,8 +46,8 @@
 		},
 		{
 			"offsets": [
-				-40,
-				-10
+				-30,
+				0
 			],
 			"loop": false,
 			"fps": 24,
@@ -60,7 +60,7 @@
 				-10,
 				-590
 			],
-			"loop": false,
+			"loop": true,
 			"fps": 24,
 			"anim": "dead",
 			"indices": [],
