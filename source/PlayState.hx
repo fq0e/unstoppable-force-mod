@@ -3419,7 +3419,8 @@ class PlayState extends MusicBeatState
 
 		if (!SONG.notes[curSection].mustHitSection)
 		{
-			defaultCamZoom = 0.7;
+
+			defaultCamZoom = curBeat < 208 ? 0.7 : 0.75;
 			moveCamera(true);
 			callOnLuas('onMoveCamera', ['dad']);
 		}
@@ -4591,6 +4592,19 @@ class PlayState extends MusicBeatState
 	}
 
 	var lastStepHit:Int = -1;
+	var windowNames:Array<String> = [
+		"CORNERED",
+		"CoRnErEd",
+		"cOrNeReD",
+		"COrnERed",
+		"coRNerED",
+		"cornered",
+		"CORnerED",
+		"corNERed",
+		"coRnEReD",
+		"CoRNeRED"
+	];
+
 	override function stepHit()
 	{
 		super.stepHit();
@@ -4602,6 +4616,11 @@ class PlayState extends MusicBeatState
 
 		if(curStep == lastStepHit) {
 			return;
+		}
+
+		if (curStep > 832 && curStep < 960)
+		{
+			windowDad.title = windowNames[FlxG.random.int(1,windowNames.length)];
 		}
 
 		lastStepHit = curStep;
@@ -4633,8 +4652,8 @@ class PlayState extends MusicBeatState
 		if(customX == null){
 			customX = -10;
 		}
-        windowDad.x = Std.int(display.width / 2);
-	    windowDad.y = Std.int(display.height / 2);
+        windowDad.x = Std.int(display.width / 2) + 150;
+	    windowDad.y = Std.int(display.height / 2) + 70;
         windowDad.stage.color = 0xFF010101;
         @:privateAccess
         windowDad.stage.addEventListener("keyDown", FlxG.keys.onKeyDown);
@@ -4813,8 +4832,9 @@ class PlayState extends MusicBeatState
 					windowDad.close();
 					camGame.alpha = 1;
 					camGame.setFilters([new ShaderFilter(effects)]);
-					saturation.x = 2.0;
-					FlxTween.tween(saturation,{x: 1.0},2,{ease: FlxEase.sineInOut});
+					dad.y -= 260;
+					contrast.x = 6.0;
+					FlxTween.tween(contrast,{x: 1.0},2,{ease: FlxEase.sineInOut});
 			}
 		}
 		lastBeatHit = curBeat;
